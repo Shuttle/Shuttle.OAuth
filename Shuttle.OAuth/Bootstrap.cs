@@ -22,7 +22,7 @@ namespace Shuttle.OAuth
                     return;
                 }
 
-                registry.RegisterCollection(typeof(IEnumerable<IOAuthProvider>), new ReflectionService().GetTypesAssignableTo<IOAuthProvider>(), Lifestyle.Singleton);
+                registry.RegisterCollection(typeof(IOAuthProvider), new ReflectionService().GetTypesAssignableTo<IOAuthProvider>(), Lifestyle.Singleton);
                 registry.AttemptRegister<IOAuthProviderCollection, OAuthProviderCollection>();
 
                 _initialized = true;
