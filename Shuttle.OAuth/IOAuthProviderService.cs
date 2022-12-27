@@ -1,6 +1,6 @@
 ﻿namespace Shuttle.OAuth
 {
-    public interface IOAuthProviderCollection
+    public interface IOAuthProviderService
     {
         IOAuthProvider Get(string name);
     }

@@ -4,11 +4,11 @@ using Shuttle.Core.Contract;
 
 namespace Shuttle.OAuth
 {
-    public class OAuthProviderCollection : IOAuthProviderCollection
+    public class OAuthProviderService : IOAuthProviderService
     {
         private readonly Dictionary<string, IOAuthProvider> _providers = new Dictionary<string, IOAuthProvider>();
         
-        public OAuthProviderCollection(IEnumerable<IOAuthProvider> providers)
+        public OAuthProviderService(IEnumerable<IOAuthProvider> providers)
         {
             Guard.AgainstNull(providers, nameof(providers));
 

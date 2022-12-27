@@ -24,7 +24,7 @@ namespace Shuttle.OAuth.GitHub
 
             var tokenRequest = new RestRequest(configuration.TokenUrl)
             {
-                Method = Method.POST,
+                Method = Method.Post,
                 RequestFormat = DataFormat.Json,
             };
 
@@ -36,13 +36,13 @@ namespace Shuttle.OAuth.GitHub
                 code
             });
 
-            var tokenResponse = _client.Execute(tokenRequest).AsDynamic();
+            var tokenResponse = _client.ExecuteAsync(tokenRequest).GetAwaiter().GetResult().AsDynamic();
 
             var userRequest = new RestRequest(configuration.DataUrl);
 
             userRequest.AddHeader("Authorization", $"token {tokenResponse.access_token}");
 
-            return _client.Execute(userRequest).AsDynamic();
+            return _client.ExecuteAsync(userRequest).GetAwaiter().GetResult().AsDynamic();
         }
 
         public string Name => "GitHub";
