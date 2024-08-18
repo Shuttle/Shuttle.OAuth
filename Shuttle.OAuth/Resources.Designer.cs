@@ -19,7 +19,7 @@ namespace Shuttle.OAuth {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -61,20 +61,65 @@ namespace Shuttle.OAuth {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name &apos;{0}&apos; has already been registered for &apos;{1}&apos;..
+        ///   Looks up a localized string similar to IOAuthProvider with name &apos;{0}&apos; has already been registered..
         /// </summary>
-        public static string DuplicateNameException {
+        public static string DuplicateProviderException {
             get {
-                return ResourceManager.GetString("DuplicateNameException", resourceCulture);
+                return ResourceManager.GetString("DuplicateProviderException", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name &apos;{0}&apos; has not been registered for &apos;{1}&apos;..
+        ///   Looks up a localized string similar to OAuthOptions with name &apos;{0}&apos; has not been registered..
         /// </summary>
-        public static string MissingNameException {
+        public static string MissingOptionsException {
             get {
-                return ResourceManager.GetString("MissingNameException", resourceCulture);
+                return ResourceManager.GetString("MissingOptionsException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IOAuthProvider with name &apos;{0}&apos; has not been registered..
+        /// </summary>
+        public static string MissingProviderException {
+            get {
+                return ResourceManager.GetString("MissingProviderException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option &apos;{0}&apos; must be provided..
+        /// </summary>
+        public static string OptionRequired {
+            get {
+                return ResourceManager.GetString("OptionRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The client Id must be provided..
+        /// </summary>
+        public static string OptionsClientIdRequired {
+            get {
+                return ResourceManager.GetString("OptionsClientIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The client secret must be provided..
+        /// </summary>
+        public static string OptionsClientSecretRequired {
+            get {
+                return ResourceManager.GetString("OptionsClientSecretRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The options name must be provided..
+        /// </summary>
+        public static string OptionsNameRequired {
+            get {
+                return ResourceManager.GetString("OptionsNameRequired", resourceCulture);
             }
         }
     }

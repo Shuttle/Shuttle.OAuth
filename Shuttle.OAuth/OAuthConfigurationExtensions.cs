@@ -2,31 +2,23 @@
 
 namespace Shuttle.OAuth
 {
-    public static class OAuthConfigurationExtensions
+    public static class OAuthOptionsExtensions
     {
-        public static void ApplyInvariants(this IOAuthConfiguration configuration)
+        public static string GetTokenUrl(this OAuthOptions options, string relativePath)
         {
-            Guard.AgainstNull(configuration, nameof(configuration));
-            
-            Guard.AgainstNullOrEmptyString(configuration.Name, nameof(configuration.Name));
-            Guard.AgainstNullOrEmptyString(configuration.ClientId, nameof(configuration.ClientId));
-            Guard.AgainstNullOrEmptyString(configuration.ClientSecret, nameof(configuration.ClientSecret));
+            Guard.AgainstNull(options);
+            Guard.AgainstNull(options.TokenUrl);
+            Guard.AgainstNull(relativePath);
+
+            return $"{options.TokenUrl}{(options.TokenUrl.EndsWith("/") ? string.Empty : "/")}{(relativePath.StartsWith("/") ? relativePath : relativePath[1..])}";
         }
 
-        public static string GetTokenUrl(this IOAuthConfiguration configuration, string path)
+        public static string GetDataUrl(this OAuthOptions options, string relativePath)
         {
-            Guard.AgainstNull(configuration, nameof(configuration));
-            Guard.AgainstNull(configuration.TokenUrl, nameof(configuration.TokenUrl));
+            Guard.AgainstNull(options);
+            Guard.AgainstNull(options.TokenUrl);
 
-            return $"{configuration.TokenUrl}{(configuration.TokenUrl.EndsWith("/") ? string.Empty : "/")}{path}";
-        }
-
-        public static string GetDataUrl(this IOAuthConfiguration configuration, string path)
-        {
-            Guard.AgainstNull(configuration, nameof(configuration));
-            Guard.AgainstNull(configuration.TokenUrl, nameof(configuration.TokenUrl));
-
-            return $"{configuration.DataUrl}{(configuration.DataUrl.EndsWith("/") ? string.Empty : "/")}{path}";
+            return $"{options.DataUrl}{(options.DataUrl.EndsWith("/") ? string.Empty : "/")}{(relativePath.StartsWith("/") ? relativePath : relativePath[1..])}";
         }
     }
 }

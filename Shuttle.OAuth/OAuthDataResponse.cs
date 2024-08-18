@@ -8,11 +8,11 @@ namespace Shuttle.OAuth
         {
         }
 
-        public string Message { get; private set; }
+        public string Message { get; private init; } = string.Empty;
 
         public bool Ok => string.IsNullOrWhiteSpace(Message) && !string.IsNullOrWhiteSpace(Value);
 
-        public string Value { get; private set; }
+        public string Value { get; private init; } = string.Empty;
 
         public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
 

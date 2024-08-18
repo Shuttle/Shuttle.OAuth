@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using RestSharp;
 using Shuttle.Core.Contract;
 
@@ -6,23 +7,21 @@ namespace Shuttle.OAuth.GitHub
 {
     public class GitHubOAuthProvider : IOAuthProvider
     {
-        private readonly IOAuthConfigurationProvider _oauthConfigurationProvider;
         private readonly RestClient _client = new RestClient();
+        private readonly OAuthOptions _oauthOptions;
 
-        public GitHubOAuthProvider(IOAuthConfigurationProvider oauthConfigurationProvider)
+        public GitHubOAuthProvider(IOptionsMonitor<OAuthOptions> oauthOptions)
         {
-            Guard.AgainstNull(oauthConfigurationProvider, nameof(oauthConfigurationProvider));
-            
-            _oauthConfigurationProvider = oauthConfigurationProvider;
+            Guard.AgainstNull(oauthOptions);
+
+            _oauthOptions = oauthOptions.Get(Name);
         }
 
-        public dynamic GetData(string code)
+        public async Task<dynamic?> GetDataDynamicAsync(string code)
         {
             Guard.AgainstNullOrEmptyString(code, nameof(code));
 
-            var configuration = _oauthConfigurationProvider.Get("github");
-
-            var tokenRequest = new RestRequest(configuration.TokenUrl)
+            var tokenRequest = new RestRequest(_oauthOptions.TokenUrl)
             {
                 Method = Method.Post,
                 RequestFormat = DataFormat.Json,
@@ -31,18 +30,23 @@ namespace Shuttle.OAuth.GitHub
             tokenRequest.AddHeader("content-type", "application/json");
             tokenRequest.AddJsonBody(new
             {
-                client_id = configuration.ClientId,
-                client_secret = configuration.ClientSecret,
+                client_id = _oauthOptions.ClientId,
+                client_secret = _oauthOptions.ClientSecret,
                 code
             });
 
-            var tokenResponse = _client.ExecuteAsync(tokenRequest).GetAwaiter().GetResult().AsDynamic();
+            var tokenResponse = (await _client.ExecuteAsync(tokenRequest)).AsDynamic();
 
-            var userRequest = new RestRequest(configuration.DataUrl);
+            if (tokenResponse == null)
+            {
+                return null;
+            }
+
+            var userRequest = new RestRequest(_oauthOptions.DataUrl);
 
             userRequest.AddHeader("Authorization", $"token {tokenResponse.access_token}");
 
-            return _client.ExecuteAsync(userRequest).GetAwaiter().GetResult().AsDynamic();
+            return (await _client.ExecuteAsync(userRequest)).AsDynamic();
         }
 
         public string Name => "GitHub";

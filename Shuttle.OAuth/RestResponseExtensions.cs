@@ -6,9 +6,14 @@ namespace Shuttle.OAuth
 {
     public static class RestResponseExtensions
     {
-        public static dynamic AsDynamic(this RestResponse response)
+        public static dynamic? AsDynamic(this RestResponse response)
         {
-            Guard.AgainstNull(response, nameof(response));
+            Guard.AgainstNull(response);
+
+            if (response.Content == null)
+            {
+                return null;
+            }
 
             return JsonConvert.DeserializeObject<dynamic>(response.Content);
         }

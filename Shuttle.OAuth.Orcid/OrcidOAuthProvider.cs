@@ -1,4 +1,6 @@
-﻿using RestSharp;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using RestSharp;
 using Shuttle.Core.Contract;
 
 namespace Shuttle.OAuth.Orcid
@@ -6,22 +8,20 @@ namespace Shuttle.OAuth.Orcid
     public class OrcidOAuthProvider : IOAuthProvider
     {
         private readonly RestClient _client = new RestClient();
-        private readonly IOAuthConfigurationProvider _oauthConfigurationProvider;
+        private readonly OAuthOptions _oauthOptions;
 
-        public OrcidOAuthProvider(IOAuthConfigurationProvider oauthConfigurationProvider)
+        public OrcidOAuthProvider(IOptionsMonitor<OAuthOptions> oauthOptions)
         {
-            Guard.AgainstNull(oauthConfigurationProvider, nameof(oauthConfigurationProvider));
+            Guard.AgainstNull(oauthOptions);
 
-            _oauthConfigurationProvider = oauthConfigurationProvider;
+            _oauthOptions = oauthOptions.Get(Name);
         }
 
-        public dynamic GetData(string code)
+        public async Task<dynamic?> GetDataDynamicAsync(string code)
         {
             Guard.AgainstNullOrEmptyString(code, nameof(code));
 
-            var credentials = _oauthConfigurationProvider.Get("orcid");
-
-            var tokenRequest = new RestRequest(credentials.GetTokenUrl("oauth/token"))
+            var tokenRequest = new RestRequest(_oauthOptions.GetTokenUrl("oauth/token"))
             {
                 Method = Method.Post,
                 RequestFormat = DataFormat.Json
@@ -29,22 +29,22 @@ namespace Shuttle.OAuth.Orcid
 
             tokenRequest.AddHeader("content-type", "application/x-www-form-urlencoded");
             tokenRequest.AddParameter("application/x-www-form-urlencoded",
-                $"client_id={credentials.ClientId}&client_secret={credentials.ClientSecret}&grant_type=authorization_code&code={code}",
+                $"client_id={_oauthOptions.ClientId}&client_secret={_oauthOptions.ClientSecret}&grant_type=authorization_code&code={code}",
                 ParameterType.RequestBody);
 
-            var tokenResponse = _client.ExecuteAsync(tokenRequest).GetAwaiter().GetResult().AsDynamic();
+            var tokenResponse = (await _client.ExecuteAsync(tokenRequest)).AsDynamic();
 
             if (tokenResponse == null || tokenResponse.orcid == null)
             {
                 return null;
             }
 
-            var userRequest = new RestRequest(credentials.GetDataUrl($"{tokenResponse.orcid.ToString()}/email"));
+            var userRequest = new RestRequest(_oauthOptions.GetDataUrl($"{tokenResponse.orcid.ToString()}/email"));
 
             userRequest.AddHeader("Accept", "application/vnd.orcid+json");
             userRequest.AddHeader("Authorization", $"Bearer {tokenResponse.access_token}");
 
-            return _client.ExecuteAsync(userRequest).GetAwaiter().GetResult().AsDynamic();
+            return (await _client.ExecuteAsync(userRequest)).AsDynamic();
         }
 
         public string Name => "Orcid";

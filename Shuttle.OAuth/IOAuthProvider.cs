@@ -1,8 +1,10 @@
-﻿namespace Shuttle.OAuth
+﻿using System.Threading.Tasks;
+
+namespace Shuttle.OAuth
 {
     public interface IOAuthProvider
     {
         string Name { get; }
-        dynamic GetData(string code);
+        Task<dynamic?> GetDataDynamicAsync(string code);
     }
 }

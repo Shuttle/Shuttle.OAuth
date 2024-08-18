@@ -117,12 +117,29 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DuplicateNameException" xml:space="preserve">
-    <value>Name '{0}' has already been registered for '{1}'.</value>
-    <comment>0 = oauth provider name, 1 = for</comment>
+  <data name="DuplicateProviderException" xml:space="preserve">
+    <value>IOAuthProvider with name '{0}' has already been registered.</value>
+    <comment>0 = provider name</comment>
   </data>
-  <data name="MissingNameException" xml:space="preserve">
-    <value>Name '{0}' has not been registered for '{1}'.</value>
-    <comment>0 = missing name, 1 = for</comment>
+  <data name="MissingOptionsException" xml:space="preserve">
+    <value>OAuthOptions with name '{0}' has not been registered.</value>
+    <comment>0 = missing options name</comment>
+  </data>
+  <data name="MissingProviderException" xml:space="preserve">
+    <value>IOAuthProvider with name '{0}' has not been registered.</value>
+    <comment>0 = missing provider name</comment>
+  </data>
+  <data name="OptionRequired" xml:space="preserve">
+    <value>Option '{0}' must be provided.</value>
+    <comment>0 = name of the required option</comment>
+  </data>
+  <data name="OptionsClientIdRequired" xml:space="preserve">
+    <value>The client Id must be provided.</value>
+  </data>
+  <data name="OptionsClientSecretRequired" xml:space="preserve">
+    <value>The client secret must be provided.</value>
+  </data>
+  <data name="OptionsNameRequired" xml:space="preserve">
+    <value>The options name must be provided.</value>
   </data>
 </root>
