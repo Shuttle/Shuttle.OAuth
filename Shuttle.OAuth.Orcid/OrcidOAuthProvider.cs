@@ -34,12 +34,12 @@ namespace Shuttle.OAuth.Orcid
 
             var tokenResponse = (await _client.ExecuteAsync(tokenRequest)).AsDynamic();
 
-            if (tokenResponse == null || tokenResponse.orcid == null)
+            if (tokenResponse == null || tokenResponse?.orcid == null)
             {
                 return null;
             }
 
-            var userRequest = new RestRequest(_oauthOptions.GetDataUrl($"{tokenResponse.orcid.ToString()}/email"));
+            var userRequest = new RestRequest(_oauthOptions.GetDataUrl($"{tokenResponse!.orcid.ToString()}/email"));
 
             userRequest.AddHeader("Accept", "application/vnd.orcid+json");
             userRequest.AddHeader("Authorization", $"Bearer {tokenResponse.access_token}");
