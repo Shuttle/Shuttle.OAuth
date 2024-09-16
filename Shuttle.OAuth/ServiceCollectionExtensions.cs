@@ -14,7 +14,17 @@ namespace Shuttle.OAuth
 
             builder?.Invoke(accessBuilder);
 
-            services.AddSingleton<IOAuthProviderService, OAuthProviderService>();
+            services.AddSingleton<IOAuthService, OAuthService>();
+            services.AddSingleton<ICodeChallenge, S256CodeChallenge>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddInMemoryOAuthGrantRepository(this IServiceCollection services)
+        {
+            Guard.AgainstNull(services);
+
+            services.AddSingleton<IOAuthGrantRepository, InMemoryOAuthGrantRepository>();
 
             return services;
         }

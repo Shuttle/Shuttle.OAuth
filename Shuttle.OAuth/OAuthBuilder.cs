@@ -14,19 +14,22 @@ namespace Shuttle.OAuth
 
         public IServiceCollection Services { get; }
 
-        public OAuthBuilder AddOAuthProvider<T>(string name, OAuthOptions oauthOptions) where T : class, IOAuthProvider
+        public OAuthBuilder AddOAuthOptions<T>(string providerName, OAuthOptions oauthOptions) where T : class, IOAuthService
         {
-            Guard.AgainstNullOrEmptyString(name);
+            Guard.AgainstNullOrEmptyString(providerName);
             Guard.AgainstNull(oauthOptions);
 
-            Services.AddSingleton<IOAuthProvider, T>();
+            Services.AddSingleton<IOAuthService, T>();
 
-            Services.Configure<OAuthOptions>(name, options =>
+            Services.Configure<OAuthOptions>(providerName, options =>
             {
                 options.ClientId = oauthOptions.ClientId;
                 options.ClientSecret = oauthOptions.ClientSecret;
                 options.TokenUrl = oauthOptions.TokenUrl;
+                options.TokenContentType = oauthOptions.TokenContentType;
                 options.DataUrl = oauthOptions.DataUrl;
+                options.DataAuthorization = oauthOptions.DataAuthorization;
+                options.DataAccept = oauthOptions.DataAccept;
             });
 
             return this;

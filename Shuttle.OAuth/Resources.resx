@@ -142,4 +142,12 @@
   <data name="OptionsNameRequired" xml:space="preserve">
     <value>The options name must be provided.</value>
   </data>
+  <data name="OAuthGrantNotFoundException" xml:space="preserve">
+    <value>No grant found with id '{0}'.</value>
+    <comment>0 = id</comment>
+  </data>
+  <data name="CodeChallengeNotFoundException" xml:space="preserve">
+    <value>No code challenge found for method '{0}'.</value>
+    <comment>0 = code challenge method</comment>
+  </data>
 </root>

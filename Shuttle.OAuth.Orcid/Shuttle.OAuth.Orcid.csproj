@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-    <PackageReference Include="RestSharp" Version="111.4.1" />
+    <PackageReference Include="RestSharp" Version="112.0.0" />
     <PackageReference Include="Shuttle.OAuth" Version="3.0.0" />
   </ItemGroup>
 

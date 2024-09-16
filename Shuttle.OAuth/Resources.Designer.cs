@@ -61,6 +61,15 @@ namespace Shuttle.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No code challenge found for method &apos;{0}&apos;..
+        /// </summary>
+        public static string CodeChallengeNotFoundException {
+            get {
+                return ResourceManager.GetString("CodeChallengeNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IOAuthProvider with name &apos;{0}&apos; has already been registered..
         /// </summary>
         public static string DuplicateProviderException {
@@ -84,6 +93,15 @@ namespace Shuttle.OAuth {
         public static string MissingProviderException {
             get {
                 return ResourceManager.GetString("MissingProviderException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No grant found with id &apos;{0}&apos;..
+        /// </summary>
+        public static string OAuthGrantNotFoundException {
+            get {
+                return ResourceManager.GetString("OAuthGrantNotFoundException", resourceCulture);
             }
         }
         
