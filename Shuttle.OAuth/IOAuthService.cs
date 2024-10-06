@@ -6,6 +6,6 @@ namespace Shuttle.OAuth
     public interface IOAuthService
     {
         Task<OAuthGrant> RegisterAsync(string providerName);
-        Task<dynamic?> GetDataDynamicAsync(Guid requestId, string code);
+        Task<dynamic> GetDataAsync(OAuthGrant grant, string code);
     }
 }

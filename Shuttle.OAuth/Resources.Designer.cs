@@ -97,6 +97,15 @@ namespace Shuttle.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content is `null`..
+        /// </summary>
+        public static string NullContentException {
+            get {
+                return ResourceManager.GetString("NullContentException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No grant found with id &apos;{0}&apos;..
         /// </summary>
         public static string OAuthGrantNotFoundException {

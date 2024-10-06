@@ -47,11 +47,10 @@ namespace Shuttle.OAuth
             return grant;
         }
 
-        public async Task<dynamic?> GetDataDynamicAsync(Guid requestId, string code)
+        public async Task<dynamic> GetDataAsync(OAuthGrant grant, string code)
         {
+            Guard.AgainstNull(grant);
             Guard.AgainstNullOrEmptyString(code);
-
-            var grant = await _oauthGrantRepository.GetAsync(requestId);
 
             var oauthOptions = _oauthOptions.Get(grant.ProviderName);
 
@@ -78,6 +77,7 @@ namespace Shuttle.OAuth
                     {
                         client_id = oauthOptions.ClientId,
                         client_secret = oauthOptions.ClientSecret,
+                        grant_type = "authorization_code",
                         code
                     });
                     break;
@@ -86,11 +86,6 @@ namespace Shuttle.OAuth
 
             var tokenResponse = (await _client.ExecuteAsync(tokenRequest)).AsDynamic();
 
-            if (tokenResponse == null)
-            {
-                return null;
-            }
-
             var userRequest = new RestRequest(oauthOptions.DataUrl);
 
             if (!string.IsNullOrWhiteSpace(oauthOptions.DataAccept))
@@ -98,7 +93,7 @@ namespace Shuttle.OAuth
                 userRequest.AddHeader("Accept", oauthOptions.DataAccept);
             }
 
-            userRequest.AddHeader("Authorization", $"{(!string.IsNullOrWhiteSpace(oauthOptions.DataAuthorization) ? $"{oauthOptions.DataAuthorization} " : string.Empty)}{tokenResponse.access_token}");
+            userRequest.AddHeader("Authorization", $"{(!string.IsNullOrWhiteSpace(oauthOptions.DataAuthorization) ? $"{oauthOptions.DataAuthorization} " : string.Empty)}{tokenResponse.GetProperty("access_token")}");
 
             return (await _client.ExecuteAsync(userRequest)).AsDynamic();
         }

@@ -21,6 +21,11 @@ namespace Shuttle.OAuth
                 return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, "ClientSecret"));
             }
 
+            if (string.IsNullOrWhiteSpace(options.AuthorizationUrl))
+            {
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, "AuthorizationUrl"));
+            }
+
             if (string.IsNullOrWhiteSpace(options.TokenUrl))
             {
                 return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, "TokenUrl"));

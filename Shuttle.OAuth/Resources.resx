@@ -150,4 +150,7 @@
     <value>No code challenge found for method '{0}'.</value>
     <comment>0 = code challenge method</comment>
   </data>
+  <data name="NullContentException" xml:space="preserve">
+    <value>Content is `null`.</value>
+  </data>
 </root>
