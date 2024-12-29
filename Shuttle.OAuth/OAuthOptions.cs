@@ -9,7 +9,7 @@
         public string TokenUrl { get; set; } = default!;
         public string TokenContentType { get; set; } = "application/json";
         public string DataUrl { get; set; } = default!;
-        public string DataAuthorization { get; set; } = "token";
+        public string DataAuthorizationScheme { get; set; } = "token";
         public string DataAccept { get; set; } = "application/json";
         public string CodeChallengeMethod { get; set; } = default!;
         public string Scope { get; set; } = default!;

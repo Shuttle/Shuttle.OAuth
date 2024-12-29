@@ -61,6 +61,15 @@ namespace Shuttle.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find an &apos;access_token&apos; property in the returned data..
+        /// </summary>
+        public static string AccessTokenNotFoundException {
+            get {
+                return ResourceManager.GetString("AccessTokenNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No code challenge found for method &apos;{0}&apos;..
         /// </summary>
         public static string CodeChallengeNotFoundException {

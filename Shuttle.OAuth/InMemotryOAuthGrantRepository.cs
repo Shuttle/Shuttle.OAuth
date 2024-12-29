@@ -20,12 +20,12 @@ namespace Shuttle.OAuth
 
         public async Task<OAuthGrant> GetAsync(Guid id)
         {
-            if (!_grants.ContainsKey(id))
+            if (!_grants.TryGetValue(id, out var grant))
             {
                 throw new OAuthException(string.Format(Resources.OAuthGrantNotFoundException, id));
             }
 
-            return await Task.FromResult(_grants[id]);
+            return await Task.FromResult(grant);
         }
     }
 }

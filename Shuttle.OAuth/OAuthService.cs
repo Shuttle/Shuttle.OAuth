@@ -11,7 +11,7 @@ namespace Shuttle.OAuth
     public class OAuthService : IOAuthService
     {
         private readonly IEnumerable<ICodeChallenge> _codeChallenges;
-        private readonly RestClient _client = new RestClient();
+        private readonly RestClient _client = new();
         private readonly IOptionsMonitor<OAuthOptions> _oauthOptions;
         private readonly IOAuthGrantRepository _oauthGrantRepository;
 
@@ -66,7 +66,7 @@ namespace Shuttle.OAuth
                 {
                     tokenRequest.AddHeader("content-type", "application/x-www-form-urlencoded");
                     tokenRequest.AddParameter("application/x-www-form-urlencoded",
-                        $"client_id={oauthOptions.ClientId}&client_secret={oauthOptions.ClientSecret}&grant_type=authorization_code&code={code}",
+                        $"client_id={oauthOptions.ClientId}&client_secret={oauthOptions.ClientSecret}&grant_type=authorization_code&code={code}{(string.IsNullOrWhiteSpace(grant.CodeVerifier) ? string.Empty : $"&code_verifier={grant.CodeVerifier}")}",
                         ParameterType.RequestBody);
                     break;
                 }
@@ -93,7 +93,12 @@ namespace Shuttle.OAuth
                 userRequest.AddHeader("Accept", oauthOptions.DataAccept);
             }
 
-            userRequest.AddHeader("Authorization", $"{(!string.IsNullOrWhiteSpace(oauthOptions.DataAuthorization) ? $"{oauthOptions.DataAuthorization} " : string.Empty)}{tokenResponse.GetProperty("access_token")}");
+            if (tokenResponse.GetType().GetProperty("access_token") == null)
+            {
+                throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException));
+            }
+
+            userRequest.AddHeader("Authorization", $"{(!string.IsNullOrWhiteSpace(oauthOptions.DataAuthorizationScheme) ? $"{oauthOptions.DataAuthorizationScheme} " : string.Empty)}{tokenResponse.GetProperty("access_token")}");
 
             return (await _client.ExecuteAsync(userRequest)).AsDynamic();
         }

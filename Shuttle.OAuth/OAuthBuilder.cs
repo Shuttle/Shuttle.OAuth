@@ -27,7 +27,7 @@ namespace Shuttle.OAuth
                 options.TokenUrl = oauthOptions.TokenUrl;
                 options.TokenContentType = oauthOptions.TokenContentType;
                 options.DataUrl = oauthOptions.DataUrl;
-                options.DataAuthorization = oauthOptions.DataAuthorization;
+                options.DataAuthorizationScheme = oauthOptions.DataAuthorizationScheme;
                 options.DataAccept = oauthOptions.DataAccept;
                 options.CodeChallengeMethod = oauthOptions.CodeChallengeMethod;
                 options.Scope = oauthOptions.Scope;

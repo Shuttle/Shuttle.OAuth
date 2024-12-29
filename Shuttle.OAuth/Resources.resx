@@ -153,4 +153,7 @@
   <data name="NullContentException" xml:space="preserve">
     <value>Content is `null`.</value>
   </data>
+  <data name="AccessTokenNotFoundException" xml:space="preserve">
+    <value>Could not find an 'access_token' property in the returned data.</value>
+  </data>
 </root>
