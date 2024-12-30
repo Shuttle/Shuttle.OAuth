@@ -154,6 +154,14 @@
     <value>Content is `null`.</value>
   </data>
   <data name="AccessTokenNotFoundException" xml:space="preserve">
-    <value>Could not find an 'access_token' property in the returned data.</value>
+    <value>Could not find an 'access_token' property in the returned data.  Received: {0}</value>
+    <comment>0 = token response content received</comment>
+  </data>
+  <data name="OAuthProivderOptionsNameException" xml:space="preserve">
+    <value>Encountered an OAuthProviderOptions instance with an empty name.</value>
+  </data>
+  <data name="OAuthProviderOptionsNotFoundException" xml:space="preserve">
+    <value>Could not find an OAuthProviderOptions instance with name '{0}'.</value>
+    <comment>0 = provider name</comment>
   </data>
 </root>

@@ -61,7 +61,7 @@ namespace Shuttle.OAuth {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find an &apos;access_token&apos; property in the returned data..
+        ///   Looks up a localized string similar to Could not find an &apos;access_token&apos; property in the returned data.  Received: {0}.
         /// </summary>
         public static string AccessTokenNotFoundException {
             get {
@@ -120,6 +120,24 @@ namespace Shuttle.OAuth {
         public static string OAuthGrantNotFoundException {
             get {
                 return ResourceManager.GetString("OAuthGrantNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Encountered an OAuthProviderOptions instance with an empty name..
+        /// </summary>
+        public static string OAuthProivderOptionsNameException {
+            get {
+                return ResourceManager.GetString("OAuthProivderOptionsNameException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find an OAuthProviderOptions instance with name &apos;{0}&apos;..
+        /// </summary>
+        public static string OAuthProviderOptionsNotFoundException {
+            get {
+                return ResourceManager.GetString("OAuthProviderOptionsNotFoundException", resourceCulture);
             }
         }
         

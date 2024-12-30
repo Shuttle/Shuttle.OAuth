@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Shuttle.OAuth
+namespace Shuttle.OAuth;
+
+public class OAuthException : Exception
 {
-    public class OAuthException : Exception
+    public OAuthException(string message) : base(message)
     {
-        public OAuthException(string message) : base(message)
-        {
-        }
     }
 }

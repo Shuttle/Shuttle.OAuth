@@ -1,44 +1,43 @@
 ﻿using Shuttle.Core.Contract;
 
-namespace Shuttle.OAuth
+namespace Shuttle.OAuth;
+
+internal class OAuthDataResponse
 {
-    internal class OAuthDataResponse
+    private OAuthDataResponse()
     {
-        private OAuthDataResponse()
+    }
+
+    public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
+
+    public string Message { get; private init; } = string.Empty;
+
+    public bool Ok => string.IsNullOrWhiteSpace(Message) && !string.IsNullOrWhiteSpace(Value);
+
+    public string Value { get; private init; } = string.Empty;
+
+    public static OAuthDataResponse Failure()
+    {
+        return new();
+    }
+
+    public static OAuthDataResponse Failure(string message)
+    {
+        Guard.AgainstNullOrEmptyString(message);
+
+        return new()
         {
-        }
+            Message = message
+        };
+    }
 
-        public string Message { get; private init; } = string.Empty;
+    public static OAuthDataResponse Success(string value)
+    {
+        Guard.AgainstNullOrEmptyString(value);
 
-        public bool Ok => string.IsNullOrWhiteSpace(Message) && !string.IsNullOrWhiteSpace(Value);
-
-        public string Value { get; private init; } = string.Empty;
-
-        public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
-
-        public static OAuthDataResponse Success(string value)
+        return new()
         {
-            Guard.AgainstNullOrEmptyString(value, nameof(value));
-
-            return new OAuthDataResponse
-            {
-                Value = value
-            };
-        }
-
-        public static OAuthDataResponse Failure()
-        {
-            return new OAuthDataResponse();
-        }
-
-        public static OAuthDataResponse Failure(string message)
-        {
-            Guard.AgainstNullOrEmptyString(message, nameof(message));
-
-            return new OAuthDataResponse
-            {
-                Message = message
-            };
-        }
+            Value = value
+        };
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Shuttle.OAuth
+namespace Shuttle.OAuth;
+
+public interface IOAuthGrantRepository
 {
-    public interface IOAuthGrantRepository
-    {
-        Task SaveAsync(OAuthGrant grant);
-        Task<OAuthGrant> GetAsync(Guid id);
-    }
+    Task<OAuthGrant> GetAsync(Guid id);
+    Task SaveAsync(OAuthGrant grant);
 }

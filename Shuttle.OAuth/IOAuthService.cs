@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace Shuttle.OAuth
+namespace Shuttle.OAuth;
+
+public interface IOAuthService
 {
-    public interface IOAuthService
-    {
-        Task<OAuthGrant> RegisterAsync(string providerName);
-        Task<dynamic> GetDataAsync(OAuthGrant grant, string code);
-    }
+    Task<dynamic> GetDataAsync(OAuthGrant grant, string code);
+    Task<OAuthGrant> RegisterAsync(string providerName);
 }

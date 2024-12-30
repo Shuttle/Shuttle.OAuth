@@ -1,32 +1,39 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Shuttle.Core.Contract;
-using System;
 
-namespace Shuttle.OAuth
+namespace Shuttle.OAuth;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddInMemoryOAuthGrantRepository(this IServiceCollection services)
     {
-        public static IServiceCollection AddOAuth(this IServiceCollection services, Action<OAuthBuilder>? builder = null)
+        Guard.AgainstNull(services);
+
+        services.AddSingleton<IOAuthGrantRepository, InMemoryOAuthGrantRepository>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddOAuth(this IServiceCollection services, Action<OAuthBuilder>? builder = null)
+    {
+        Guard.AgainstNull(services);
+
+        var accessBuilder = new OAuthBuilder(services);
+
+        builder?.Invoke(accessBuilder);
+
+        services.Configure<OAuthOptions>(options =>
         {
-            Guard.AgainstNull(services);
+            options.DefaultRedirectUri = accessBuilder.Options.DefaultRedirectUri;
+            options.Providers = accessBuilder.Options.Providers;
+        });
 
-            var accessBuilder = new OAuthBuilder(services);
+        services.AddSingleton<IValidateOptions<OAuthOptions>, OAuthOptionsValidator>();
+        services.AddSingleton<IOAuthService, OAuthService>();
+        services.AddSingleton<ICodeChallenge, S256CodeChallenge>();
 
-            builder?.Invoke(accessBuilder);
-
-            services.AddSingleton<IOAuthService, OAuthService>();
-            services.AddSingleton<ICodeChallenge, S256CodeChallenge>();
-
-            return services;
-        }
-
-        public static IServiceCollection AddInMemoryOAuthGrantRepository(this IServiceCollection services)
-        {
-            Guard.AgainstNull(services);
-
-            services.AddSingleton<IOAuthGrantRepository, InMemoryOAuthGrantRepository>();
-
-            return services;
-        }
+        return services;
     }
 }
