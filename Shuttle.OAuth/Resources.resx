@@ -164,4 +164,7 @@
     <value>Could not find an OAuthProviderOptions instance with name '{0}'.</value>
     <comment>0 = provider name</comment>
   </data>
+  <data name="OAuthGrantDataNameNotFoundException" xml:space="preserve">
+    <value>Could not find a data item with name '{0}'.</value>
+  </data>
 </root>

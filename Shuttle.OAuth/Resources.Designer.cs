@@ -115,6 +115,15 @@ namespace Shuttle.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find a data item with name &apos;{0}&apos;..
+        /// </summary>
+        public static string OAuthGrantDataNameNotFoundException {
+            get {
+                return ResourceManager.GetString("OAuthGrantDataNameNotFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No grant found with id &apos;{0}&apos;..
         /// </summary>
         public static string OAuthGrantNotFoundException {

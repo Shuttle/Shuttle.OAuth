@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.Extensions.Options;
 using RestSharp;
 using Shuttle.Core.Contract;
@@ -25,11 +23,11 @@ public class OAuthService : IOAuthService
         _oauthGrantRepository = Guard.AgainstNull(oauthGrantRepository);
     }
 
-    public async Task<OAuthGrant> RegisterAsync(string providerName)
+    public async Task<OAuthGrant> RegisterAsync(string providerName, IDictionary<string, string>? data = null)
     {
         var oauthProviderOptions = _oauthOptions.GetProviderOptions(providerName);
 
-        var grant = new OAuthGrant(Guid.NewGuid(), providerName);
+        var grant = new OAuthGrant(Guid.NewGuid(), providerName, data);
 
         if (!string.IsNullOrWhiteSpace(oauthProviderOptions.Authorize.CodeChallengeMethod))
         {
