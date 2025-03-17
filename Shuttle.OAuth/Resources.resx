@@ -167,4 +167,8 @@
   <data name="OAuthGrantDataNameNotFoundException" xml:space="preserve">
     <value>Could not find a data item with name '{0}'.</value>
   </data>
+  <data name="UnknownIssuerException" xml:space="preserve">
+    <value>Could not find options for issuer '{0}'.</value>
+    <comment>0 = issuer uri</comment>
+  </data>
 </root>

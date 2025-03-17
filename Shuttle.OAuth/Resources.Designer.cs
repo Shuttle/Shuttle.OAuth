@@ -185,5 +185,14 @@ namespace Shuttle.OAuth {
                 return ResourceManager.GetString("OptionsNameRequired", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find options for issuer &apos;{0}&apos;..
+        /// </summary>
+        public static string UnknownIssuerException {
+            get {
+                return ResourceManager.GetString("UnknownIssuerException", resourceCulture);
+            }
+        }
     }
 }
