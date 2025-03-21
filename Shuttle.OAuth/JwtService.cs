@@ -42,7 +42,7 @@ public class JwtService : IJwtService
         foreach (var identityNameClaimType in options.Issuer.IdentityNameClaimTypes)
         {
             claim = jsonToken.Claims.FirstOrDefault(item => item.Type.Equals(identityNameClaimType, StringComparison.InvariantCultureIgnoreCase));
-            
+
             if (claim != null)
             {
                 break;
@@ -52,14 +52,17 @@ public class JwtService : IJwtService
         return await ValueTask.FromResult(claim?.Value ?? string.Empty);
     }
 
-    public async ValueTask<bool> IsValidAsync(string token)
+    public async Task<TokenValidationResult> ValidateTokenAsync(string token)
     {
-        var jsonToken = _jwtHandler.ReadJsonWebToken(Guard.AgainstNullOrEmptyString(token));
-        var options = GetOptions(jsonToken);
+        var jwt = _jwtHandler.ReadJsonWebToken(Guard.AgainstNullOrEmptyString(token));
+        var options = GetOptions(jwt);
 
         if (options == null)
         {
-            return false;
+            return new()
+            {
+                Exception = new InvalidOperationException(string.Format(Resources.OAuthProviderOptionsIssuerNotFoundException, jwt.Issuer, string.Join(',', jwt.Audiences ?? Enumerable.Empty<string>())))
+            };
         }
 
         var keys = await GetSigningKeysAsync(options);
@@ -75,17 +78,17 @@ public class JwtService : IJwtService
             IssuerSigningKeys = keys
         };
 
-        return (await _jwtHandler.ValidateTokenAsync(token, validationParameters)).IsValid;
+        return await _jwtHandler.ValidateTokenAsync(token, validationParameters);
     }
 
     private OAuthProviderOptions? GetOptions(JsonWebToken jwt)
     {
         return _oauthOptions.Providers.FirstOrDefault(item =>
-                   item.Issuer.Uri.Equals(jwt.Issuer, StringComparison.CurrentCultureIgnoreCase) &&
-                   (
-                       !item.Issuer.Audiences.Any() ||
-                       item.Issuer.Audiences.Intersect(jwt.Audiences).Any()
-                   ));
+            item.Issuer.Uri.Equals(jwt.Issuer, StringComparison.CurrentCultureIgnoreCase) &&
+            (
+                !item.Issuer.Audiences.Any() ||
+                item.Issuer.Audiences.Intersect(jwt.Audiences).Any()
+            ));
     }
 
     private async Task<IEnumerable<SecurityKey>> GetSigningKeysAsync(OAuthProviderOptions options)
