@@ -171,8 +171,4 @@
     <value>Could not find options for issuer '{0}'.</value>
     <comment>0 = issuer uri</comment>
   </data>
-  <data name="OAuthProviderOptionsIssuerNotFoundException" xml:space="preserve">
-    <value>Could not find `OAuthProviderOptions` matching Issuer '{0}' with audience(s) '{1}'.</value>
-    <comment>0 = issuer, 1 = audience list (csv)</comment>
-  </data>
 </root>

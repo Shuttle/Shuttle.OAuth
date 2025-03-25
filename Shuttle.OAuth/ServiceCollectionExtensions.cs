@@ -33,7 +33,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IValidateOptions<OAuthOptions>, OAuthOptionsValidator>();
         services.AddSingleton<IOAuthService, OAuthService>();
         services.AddSingleton<ICodeChallenge, S256CodeChallenge>();
-        services.AddSingleton<IJwtService, JwtService>();
 
         services.AddHttpClient("Shuttle.OAuth");
 

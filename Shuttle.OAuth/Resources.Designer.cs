@@ -142,15 +142,6 @@ namespace Shuttle.OAuth {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find `OAuthProviderOptions` matching Issuer &apos;{0}&apos; with audience(s) &apos;{1}&apos;..
-        /// </summary>
-        public static string OAuthProviderOptionsIssuerNotFoundException {
-            get {
-                return ResourceManager.GetString("OAuthProviderOptionsIssuerNotFoundException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Could not find an OAuthProviderOptions instance with name &apos;{0}&apos;..
         /// </summary>
         public static string OAuthProviderOptionsNotFoundException {

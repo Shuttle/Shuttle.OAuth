@@ -15,22 +15,10 @@ public class OAuthProviderOptions
 {
     public AuthorizeOptions Authorize { get; set; } = new();
     public DataOptions Data { get; set; } = new();
-    public IssuerOptions Issuer { get; set; } = new();
     public string Name { get; set; } = string.Empty;
     public string RedirectUri { get; set; } = string.Empty;
     public string Scope { get; set; } = string.Empty;
     public TokenOptions Token { get; set; } = new();
-}
-
-public class IssuerOptions
-{
-    public string JwksUri { get; set; } = string.Empty; // JSON Web Key Store
-
-    public string Uri { get; set; } = string.Empty;
-    public List<string> Audiences { get; set; } = [];
-    public List<string> IdentityNameClaimTypes { get; set; } = [];
-    public TimeSpan ClockSkew { get; set; } = TimeSpan.FromMinutes(5);
-    public TimeSpan SigningKeyCacheDuration { get; set; } = TimeSpan.FromHours(1);
 }
 
 public class DataOptions
