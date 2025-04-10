@@ -62,11 +62,6 @@ public class OAuthOptionsValidator : IValidateOptions<OAuthOptions>
             {
                 return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Data.AuthorizationHeaderScheme"));
             }
-
-            if (string.IsNullOrWhiteSpace(providerOptions.Data.EMailPropertyName))
-            {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Data.EMailPropertyName"));
-            }
         }
 
         return ValidateOptionsResult.Success;

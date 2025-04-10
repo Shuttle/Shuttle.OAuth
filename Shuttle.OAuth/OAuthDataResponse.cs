@@ -23,7 +23,7 @@ internal class OAuthDataResponse
 
     public static OAuthDataResponse Failure(string message)
     {
-        Guard.AgainstNullOrEmptyString(message);
+        Guard.AgainstEmpty(message);
 
         return new()
         {
@@ -33,7 +33,7 @@ internal class OAuthDataResponse
 
     public static OAuthDataResponse Success(string value)
     {
-        Guard.AgainstNullOrEmptyString(value);
+        Guard.AgainstEmpty(value);
 
         return new()
         {

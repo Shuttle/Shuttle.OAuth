@@ -10,7 +10,7 @@ public class OAuthGrant
     {
         Id = id;
         Data = data ?? new Dictionary<string, string>();
-        ProviderName = Guard.AgainstNullOrEmptyString(providerName);
+        ProviderName = Guard.AgainstEmpty(providerName);
     }
 
     public string CodeChallenge { get; private set; } = default!;
@@ -22,15 +22,15 @@ public class OAuthGrant
 
     public OAuthGrant WithCodeChallenge(string codeChallenge, string codeVerifier)
     {
-        CodeChallenge = Guard.AgainstNullOrEmptyString(codeChallenge);
-        CodeVerifier = Guard.AgainstNullOrEmptyString(codeVerifier);
+        CodeChallenge = Guard.AgainstEmpty(codeChallenge);
+        CodeVerifier = Guard.AgainstEmpty(codeVerifier);
 
         return this;
     }
 
     public bool HasData(string name)
     {
-        return Data.ContainsKey(Guard.AgainstNullOrEmptyString(name));
+        return Data.ContainsKey(Guard.AgainstEmpty(name));
     }
 
     public string GetData(string name)
@@ -40,6 +40,6 @@ public class OAuthGrant
             throw new InvalidOperationException(string.Format(Resources.OAuthGrantDataNameNotFoundException, name));
         }
 
-        return Data[Guard.AgainstNullOrEmptyString(name)];
+        return Data[Guard.AgainstEmpty(name)];
     }
 }

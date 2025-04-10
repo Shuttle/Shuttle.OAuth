@@ -51,7 +51,7 @@ public class OAuthService : IOAuthService
     public async Task<dynamic> GetDataAsync(OAuthGrant grant, string code)
     {
         Guard.AgainstNull(grant);
-        Guard.AgainstNullOrEmptyString(code);
+        Guard.AgainstEmpty(code);
 
         var oauthProviderOptions = _oauthOptions.GetProviderOptions(grant.ProviderName);
 

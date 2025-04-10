@@ -26,6 +26,7 @@ public class DataOptions
     public string AcceptHeader { get; set; } = "application/json";
     public string AuthorizationHeaderScheme { get; set; } = "token";
     public string EMailPropertyName { get; set; } = "email";
+    public string IdentityPropertyName { get; set; } = "userPrincipalName";
     public string Url { get; set; } = string.Empty;
 }
 

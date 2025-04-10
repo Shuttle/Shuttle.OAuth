@@ -8,7 +8,7 @@ public static class OAuthOptionsExtensions
 {
     public static OAuthProviderOptions? FindProviderOptions(this OAuthOptions oauthOptions, string providerName)
     {
-        Guard.AgainstNullOrEmptyString(providerName);
+        Guard.AgainstEmpty(providerName);
 
         return Guard.AgainstNull(oauthOptions).Providers.FirstOrDefault(provider => provider.Name.Equals(providerName, StringComparison.InvariantCultureIgnoreCase));
     }

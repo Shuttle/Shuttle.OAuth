@@ -19,7 +19,7 @@ public class S256CodeChallenge : ICodeChallenge
 
     public async ValueTask<string> GenerateCodeChallengeAsync(string codeVerifier)
     {
-        Guard.AgainstNullOrEmptyString(codeVerifier);
+        Guard.AgainstEmpty(codeVerifier);
 
         using (var sha256 = SHA256.Create())
         {
