@@ -65,18 +65,32 @@ public class OAuthService : IOAuthService
         {
             case "APPLICATION/X-WWW-FORM-URLENCODED":
             {
-                var parameterBody = new StringBuilder($"client_id={oauthProviderOptions.Token.ClientId}&grant_type=authorization_code&code={code}&redirect_uri={oauthProviderOptions.RedirectUri}");
+                var redirectUri = grant.HasData("RedirectUri") ? grant.GetData("RedirectUri") : oauthProviderOptions.RedirectUri;
+                var parameterBody = new StringBuilder($"client_id={oauthProviderOptions.Token.ClientId}&grant_type=authorization_code&code={code}&redirect_uri={redirectUri}");
 
                 if (!string.IsNullOrWhiteSpace(grant.CodeVerifier))
                 {
                     parameterBody.Append($"&code_verifier={grant.CodeVerifier}");
                 }
 
-                if (!string.IsNullOrWhiteSpace(oauthProviderOptions.Token.OriginHeader))
+                var originHeader = oauthProviderOptions.Token.OriginHeader;
+
+                if (string.IsNullOrWhiteSpace(originHeader))
                 {
-                    tokenRequest.AddHeader("origin", oauthProviderOptions.Token.OriginHeader);
+                    if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out var uri))
+                    {
+                        throw new ArgumentException(@"Invalid URI", nameof(redirectUri));
+                    }
+
+                    originHeader = $"{uri.Scheme}://{uri.Host}";
+
+                    if (!uri.IsDefaultPort)
+                    {
+                        originHeader += $":{uri.Port}";
+                    }
                 }
-                
+
+                tokenRequest.AddHeader("origin", originHeader);
                 tokenRequest.AddHeader("content-type", "application/x-www-form-urlencoded");
                 tokenRequest.AddParameter("application/x-www-form-urlencoded", parameterBody.ToString(), ParameterType.RequestBody);
                 break;
@@ -122,7 +136,7 @@ public class OAuthService : IOAuthService
         {
             throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, tokenResponse));
         }
-        
+
         userRequest.AddHeader("Authorization", $"{(!string.IsNullOrWhiteSpace(oauthProviderOptions.Data.AuthorizationHeaderScheme) ? $"{oauthProviderOptions.Data.AuthorizationHeaderScheme} " : string.Empty)}{accessToken}");
 
         return (await _client.ExecuteAsync(userRequest)).AsDynamic();
