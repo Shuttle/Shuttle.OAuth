@@ -33,9 +33,9 @@ public class OAuthOptionsValidator : IValidateOptions<OAuthOptions>
                 return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Authorize.Url"));
             }
 
-            if (string.IsNullOrWhiteSpace(providerOptions.Authorize.ClientId))
+            if (string.IsNullOrWhiteSpace(providerOptions.ClientId))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Authorize.ClientId"));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.ClientId"));
             }
 
             if (string.IsNullOrWhiteSpace(providerOptions.Token.Url))

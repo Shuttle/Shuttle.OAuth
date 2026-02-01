@@ -71,7 +71,7 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
             case "APPLICATION/X-WWW-FORM-URLENCODED":
             {
                 var redirectUri = grant.HasData("RedirectUri") ? grant.GetData("RedirectUri") : oauthProviderOptions.RedirectUri;
-                var parameterBody = new StringBuilder($"client_id={oauthProviderOptions.Token.ClientId}&grant_type=authorization_code&code={code}&redirect_uri={redirectUri}");
+                var parameterBody = new StringBuilder($"client_id={oauthProviderOptions.ClientId}&grant_type=authorization_code&code={code}&redirect_uri={redirectUri}");
 
                 if (!string.IsNullOrWhiteSpace(grant.CodeVerifier))
                 {
@@ -106,14 +106,14 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
 
                 var body = new Dictionary<string, object>
                 {
-                    { "client_id", oauthProviderOptions.Token.ClientId },
+                    { "client_id", oauthProviderOptions.ClientId },
                     { "grant_type", "authorization_code" },
                     { "code", code }
                 };
 
-                if (!string.IsNullOrWhiteSpace(oauthProviderOptions.Token.ClientSecret))
+                if (!string.IsNullOrWhiteSpace(oauthProviderOptions.ClientSecret))
                 {
-                    body["client_secret"] = oauthProviderOptions.Token.ClientSecret;
+                    body["client_secret"] = oauthProviderOptions.ClientSecret;
                 }
 
                 tokenRequest.AddJsonBody(body);
