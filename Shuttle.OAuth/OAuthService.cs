@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Options;
 using RestSharp;
 using Shuttle.Core.Contract;
 
 namespace Shuttle.OAuth;
 
-public class OAuthService : IOAuthService
+/// <summary>
+///     Provides functionality for registering OAuth grants and retrieving user data.
+/// </summary>
+public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantRepository oauthGrantRepository, IEnumerable<ICodeChallenge> codeChallenges, IHttpClientFactory httpClientFactory)
+    : IOAuthService
 {
-    private readonly RestClient _client = new();
-    private readonly IEnumerable<ICodeChallenge> _codeChallenges;
-    private readonly IOAuthGrantRepository _oauthGrantRepository;
-    private readonly OAuthOptions _oauthOptions;
+    private readonly IEnumerable<ICodeChallenge> _codeChallenges = Guard.AgainstNull(codeChallenges);
+    private readonly IHttpClientFactory _httpClientFactory = Guard.AgainstNull(httpClientFactory);
+    private readonly IOAuthGrantRepository _oauthGrantRepository = Guard.AgainstNull(oauthGrantRepository);
+    private readonly OAuthOptions _oauthOptions = Guard.AgainstNull(Guard.AgainstNull(oauthOptions).Value);
 
-    public OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantRepository oauthGrantRepository, IEnumerable<ICodeChallenge> codeChallenges)
-    {
-        _codeChallenges = Guard.AgainstNull(codeChallenges);
-        _oauthOptions = Guard.AgainstNull(Guard.AgainstNull(oauthOptions).Value);
-        _oauthGrantRepository = Guard.AgainstNull(oauthGrantRepository);
-    }
-
+    /// <inheritdoc />
     public async Task<OAuthGrant> RegisterAsync(string providerName, IDictionary<string, string>? data = null)
     {
         var oauthProviderOptions = _oauthOptions.GetProviderOptions(providerName);
@@ -48,12 +43,22 @@ public class OAuthService : IOAuthService
         return grant;
     }
 
+    /// <inheritdoc />
     public async Task<dynamic> GetDataAsync(OAuthGrant grant, string code)
+    {
+        return await GetDataAsync<dynamic>(grant, code);
+    }
+
+    /// <inheritdoc />
+    public async Task<T> GetDataAsync<T>(OAuthGrant grant, string code)
     {
         Guard.AgainstNull(grant);
         Guard.AgainstEmpty(code);
 
         var oauthProviderOptions = _oauthOptions.GetProviderOptions(grant.ProviderName);
+
+        using var httpClient = _httpClientFactory.CreateClient("Shuttle.OAuth");
+        using var client = new RestClient(httpClient);
 
         var tokenRequest = new RestRequest(oauthProviderOptions.Token.Url)
         {
@@ -117,7 +122,31 @@ public class OAuthService : IOAuthService
             }
         }
 
-        var tokenResponse = (await _client.ExecuteAsync(tokenRequest)).AsDynamic();
+        var tokenResponse = await client.ExecuteAsync(tokenRequest);
+
+        // We need to parse the response as dynamic/JsonElement to get the access token
+        // Since we are inside a generic method, we can't easily rely on RestSharp's AsDynamic() for intermediate steps safely if we want to be clean, 
+        // but for now let's stick to standard behavior.
+
+        dynamic? accessToken;
+
+        try
+        {
+            // Using System.Text.Json to parse and extract access_token
+            using var doc = JsonDocument.Parse(tokenResponse.Content ?? "{}");
+            if (doc.RootElement.TryGetProperty("access_token", out var accessTokenElement))
+            {
+                accessToken = accessTokenElement.GetString();
+            }
+            else
+            {
+                throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, tokenResponse.Content));
+            }
+        }
+        catch
+        {
+            throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, tokenResponse.Content));
+        }
 
         var userRequest = new RestRequest(oauthProviderOptions.Data.Url);
 
@@ -126,19 +155,15 @@ public class OAuthService : IOAuthService
             userRequest.AddHeader("Accept", oauthProviderOptions.Data.AcceptHeader);
         }
 
-        dynamic? accessToken;
-
-        try
-        {
-            accessToken = tokenResponse.GetProperty("access_token");
-        }
-        catch
-        {
-            throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, tokenResponse));
-        }
-
         userRequest.AddHeader("Authorization", $"{(!string.IsNullOrWhiteSpace(oauthProviderOptions.Data.AuthorizationHeaderScheme) ? $"{oauthProviderOptions.Data.AuthorizationHeaderScheme} " : string.Empty)}{accessToken}");
 
-        return (await _client.ExecuteAsync(userRequest)).AsDynamic();
+        // If T is dynamic, we can use RestSharp's ExecuteAsync generic or just return deserialized
+        if (typeof(T) == typeof(object) || typeof(T).FullName == "System.Object") // dynamic is basically object
+        {
+            var response = await client.ExecuteAsync(userRequest);
+            return JsonSerializer.Deserialize<T>(response.Content ?? "{}")!;
+        }
+
+        return (await client.ExecuteAsync<T>(userRequest)).Data!;
     }
 }

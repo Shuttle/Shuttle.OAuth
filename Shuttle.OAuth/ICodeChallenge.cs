@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Shuttle.OAuth;
+﻿namespace Shuttle.OAuth;
 
 public interface ICodeChallenge
 {

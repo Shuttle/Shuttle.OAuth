@@ -1,31 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using Shuttle.Core.Contract;
+﻿using Shuttle.Core.Contract;
 
 namespace Shuttle.OAuth;
 
-public class OAuthGrant
+public class OAuthGrant(Guid id, string providerName, IDictionary<string, string>? data = null)
 {
-    public OAuthGrant(Guid id, string providerName, IDictionary<string, string>? data = null)
+    public string CodeChallenge { get; private set; } = string.Empty;
+    public string CodeVerifier { get; private set; } = string.Empty;
+    public IDictionary<string, string> Data { get; } = data ?? new Dictionary<string, string>();
+
+    public Guid Id { get; } = Guard.AgainstEmpty(id);
+    public string ProviderName { get; } = Guard.AgainstEmpty(providerName);
+
+    public string GetData(string name)
     {
-        Id = id;
-        Data = data ?? new Dictionary<string, string>();
-        ProviderName = Guard.AgainstEmpty(providerName);
-    }
-
-    public string CodeChallenge { get; private set; } = default!;
-    public string CodeVerifier { get; private set; } = default!;
-
-    public Guid Id { get; }
-    public IDictionary<string, string> Data { get; }
-    public string ProviderName { get; }
-
-    public OAuthGrant WithCodeChallenge(string codeChallenge, string codeVerifier)
-    {
-        CodeChallenge = Guard.AgainstEmpty(codeChallenge);
-        CodeVerifier = Guard.AgainstEmpty(codeVerifier);
-
-        return this;
+        return !HasData(name) ? throw new InvalidOperationException(string.Format(Resources.OAuthGrantDataNameNotFoundException, name)) : Data[Guard.AgainstEmpty(name)];
     }
 
     public bool HasData(string name)
@@ -33,13 +21,11 @@ public class OAuthGrant
         return Data.ContainsKey(Guard.AgainstEmpty(name));
     }
 
-    public string GetData(string name)
+    public OAuthGrant WithCodeChallenge(string codeChallenge, string codeVerifier)
     {
-        if (!HasData(name))
-        {
-            throw new InvalidOperationException(string.Format(Resources.OAuthGrantDataNameNotFoundException, name));
-        }
+        CodeChallenge = Guard.AgainstEmpty(codeChallenge);
+        CodeVerifier = Guard.AgainstEmpty(codeVerifier);
 
-        return Data[Guard.AgainstEmpty(name)];
+        return this;
     }
 }

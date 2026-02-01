@@ -1,7 +1,5 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Shuttle.Core.Contract;
 
 namespace Shuttle.OAuth;
@@ -21,12 +19,10 @@ public class S256CodeChallenge : ICodeChallenge
     {
         Guard.AgainstEmpty(codeVerifier);
 
-        using (var sha256 = SHA256.Create())
-        {
-            var bytes = Encoding.ASCII.GetBytes(codeVerifier);
-            var hash = sha256.ComputeHash(bytes);
-            return await ValueTask.FromResult(Base64UrlEncode(hash));
-        }
+        using var sha256 = SHA256.Create();
+        var bytes = Encoding.ASCII.GetBytes(codeVerifier);
+        var hash = sha256.ComputeHash(bytes);
+        return await ValueTask.FromResult(Base64UrlEncode(hash));
     }
 
     private static string Base64UrlEncode(byte[] input)
