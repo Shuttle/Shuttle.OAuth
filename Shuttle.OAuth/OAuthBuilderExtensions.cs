@@ -7,7 +7,7 @@ public static class OAuthBuilderExtensions
 {
     extension(OAuthBuilder oauthBuilder)
     {
-        public OAuthBuilder AddInMemoryOAuthGrantRepository()
+        public OAuthBuilder UseInMemoryOAuthGrantRepository()
         {
             Guard.AgainstNull(oauthBuilder);
 
