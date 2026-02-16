@@ -1,7 +1,7 @@
-﻿using System.Text;
+﻿using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using RestSharp;
 using Shuttle.Core.Contract;
 
 namespace Shuttle.OAuth;
@@ -58,13 +58,8 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
         var oauthProviderOptions = _oauthOptions.GetProviderOptions(grant.ProviderName);
 
         using var httpClient = _httpClientFactory.CreateClient("Shuttle.OAuth");
-        using var client = new RestClient(httpClient);
-
-        var tokenRequest = new RestRequest(oauthProviderOptions.Token.Url)
-        {
-            Method = Method.Post,
-            RequestFormat = DataFormat.Json
-        };
+        
+        var tokenRequest = new HttpRequestMessage(HttpMethod.Post, oauthProviderOptions.Token.Url);
 
         switch (oauthProviderOptions.Token.ContentTypeHeader.ToUpperInvariant())
         {
@@ -95,15 +90,13 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
                     }
                 }
 
-                tokenRequest.AddHeader("origin", originHeader);
-                tokenRequest.AddHeader("content-type", "application/x-www-form-urlencoded");
-                tokenRequest.AddParameter("application/x-www-form-urlencoded", parameterBody.ToString(), ParameterType.RequestBody);
+                tokenRequest.Headers.Add("Origin", originHeader);
+                tokenRequest.Content = new StringContent(parameterBody.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
+                
                 break;
             }
             default:
             {
-                tokenRequest.AddHeader("content-type", "application/json");
-
                 var body = new Dictionary<string, object>
                 {
                     { "client_id", oauthProviderOptions.ClientId },
@@ -116,54 +109,58 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
                     body["client_secret"] = oauthProviderOptions.ClientSecret;
                 }
 
-                tokenRequest.AddJsonBody(body);
+                tokenRequest.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
 
                 break;
             }
         }
 
-        var tokenResponse = await client.ExecuteAsync(tokenRequest);
+        var tokenResponse = await httpClient.SendAsync(tokenRequest);
+        var content = await tokenResponse.Content.ReadAsStringAsync();
 
-        // We need to parse the response as dynamic/JsonElement to get the access token
-        // Since we are inside a generic method, we can't easily rely on RestSharp's AsDynamic() for intermediate steps safely if we want to be clean, 
-        // but for now let's stick to standard behavior.
+        if (!tokenResponse.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, content));
+        }
 
         dynamic? accessToken;
 
         try
         {
-            // Using System.Text.Json to parse and extract access_token
-            using var doc = JsonDocument.Parse(tokenResponse.Content ?? "{}");
+            using var doc = JsonDocument.Parse(content);
+            
             if (doc.RootElement.TryGetProperty("access_token", out var accessTokenElement))
             {
                 accessToken = accessTokenElement.GetString();
             }
             else
             {
-                throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, tokenResponse.Content));
+                throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, content));
             }
         }
         catch
         {
-            throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, tokenResponse.Content));
+            throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, content));
         }
 
-        var userRequest = new RestRequest(oauthProviderOptions.Data.Url);
+        var userRequest = new HttpRequestMessage(HttpMethod.Get, oauthProviderOptions.Data.Url);
 
         if (!string.IsNullOrWhiteSpace(oauthProviderOptions.Data.AcceptHeader))
         {
-            userRequest.AddHeader("Accept", oauthProviderOptions.Data.AcceptHeader);
+            userRequest.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(oauthProviderOptions.Data.AcceptHeader));
         }
 
-        userRequest.AddHeader("Authorization", $"{(!string.IsNullOrWhiteSpace(oauthProviderOptions.Data.AuthorizationHeaderScheme) ? $"{oauthProviderOptions.Data.AuthorizationHeaderScheme} " : string.Empty)}{accessToken}");
+        userRequest.Headers.Authorization = new AuthenticationHeaderValue(!string.IsNullOrWhiteSpace(oauthProviderOptions.Data.AuthorizationHeaderScheme) ? oauthProviderOptions.Data.AuthorizationHeaderScheme : "Bearer", accessToken);
 
-        // If T is dynamic, we can use RestSharp's ExecuteAsync generic or just return deserialized
-        if (typeof(T) == typeof(object) || typeof(T).FullName == "System.Object") // dynamic is basically object
+        var response = await httpClient.SendAsync(userRequest);
+        
+        content = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
         {
-            var response = await client.ExecuteAsync(userRequest);
-            return JsonSerializer.Deserialize<T>(response.Content ?? "{}")!;
+            throw new InvalidOperationException(string.Format(Resources.GetDataException, content));
         }
 
-        return (await client.ExecuteAsync<T>(userRequest)).Data!;
+        return JsonSerializer.Deserialize<T>(content)!;
     }
 }

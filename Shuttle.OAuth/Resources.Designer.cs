@@ -194,5 +194,13 @@ namespace Shuttle.OAuth {
                 return ResourceManager.GetString("UnknownIssuerException", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to Could not retrieve data from provider. Content: {0}..
+        /// </summary>
+        public static string GetDataException {
+            get {
+                return ResourceManager.GetString("GetDataException", resourceCulture);
+            }
+        }
     }
 }

@@ -171,4 +171,8 @@
     <value>Could not find options for issuer '{0}'.</value>
     <comment>0 = issuer uri</comment>
   </data>
+  <data name="GetDataException" xml:space="preserve">
+    <value>Could not retrieve data from provider. Content: {0}</value>
+    <comment>0 = content</comment>
+  </data>
 </root>
