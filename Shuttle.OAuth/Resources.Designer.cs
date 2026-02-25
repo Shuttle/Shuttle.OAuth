@@ -19,7 +19,7 @@ namespace Shuttle.OAuth {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -88,6 +88,15 @@ namespace Shuttle.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not retrieve data from provider. Content: {0}.
+        /// </summary>
+        public static string GetDataException {
+            get {
+                return ResourceManager.GetString("GetDataException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OAuthOptions with name &apos;{0}&apos; has not been registered..
         /// </summary>
         public static string MissingOptionsException {
@@ -129,15 +138,6 @@ namespace Shuttle.OAuth {
         public static string OAuthGrantNotFoundException {
             get {
                 return ResourceManager.GetString("OAuthGrantNotFoundException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Encountered an OAuthProviderOptions instance with an empty name..
-        /// </summary>
-        public static string OAuthProivderOptionsNameException {
-            get {
-                return ResourceManager.GetString("OAuthProivderOptionsNameException", resourceCulture);
             }
         }
         
@@ -192,14 +192,6 @@ namespace Shuttle.OAuth {
         public static string UnknownIssuerException {
             get {
                 return ResourceManager.GetString("UnknownIssuerException", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Looks up a localized string similar to Could not retrieve data from provider. Content: {0}..
-        /// </summary>
-        public static string GetDataException {
-            get {
-                return ResourceManager.GetString("GetDataException", resourceCulture);
             }
         }
     }

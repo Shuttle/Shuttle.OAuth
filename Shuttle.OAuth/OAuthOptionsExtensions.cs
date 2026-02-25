@@ -10,7 +10,9 @@ public static class OAuthOptionsExtensions
         {
             Guard.AgainstEmpty(providerName);
 
-            return Guard.AgainstNull(oauthOptions).Providers.FirstOrDefault(provider => provider.Name.Equals(providerName, StringComparison.InvariantCultureIgnoreCase));
+            return oauthOptions.Providers.TryGetValue(providerName, out var providerOptions)
+                ? providerOptions
+                : null;
         }
 
         public OAuthProviderOptions GetProviderOptions(string providerName)

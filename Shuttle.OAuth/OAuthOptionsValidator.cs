@@ -11,11 +11,13 @@ public class OAuthOptionsValidator : IValidateOptions<OAuthOptions>
             return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, "DefaultRedirectUri"));
         }
 
-        foreach (var providerOptions in oauthOptions.Providers)
+        foreach (var pair in oauthOptions.Providers)
         {
-            if (string.IsNullOrWhiteSpace(providerOptions.Name))
+            var providerOptions = pair.Value;
+
+            if (string.IsNullOrWhiteSpace(providerOptions.DisplayName))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, Resources.OAuthProivderOptionsNameException));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{pair.Key}.DisplayName"));
             }
 
             if (string.IsNullOrWhiteSpace(providerOptions.RedirectUri))
@@ -25,42 +27,42 @@ public class OAuthOptionsValidator : IValidateOptions<OAuthOptions>
 
             if (string.IsNullOrWhiteSpace(providerOptions.Scope))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Scope"));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{pair.Key}.Scope"));
             }
 
             if (string.IsNullOrWhiteSpace(providerOptions.Authorize.Url))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Authorize.Url"));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{pair.Key}.Authorize.Url"));
             }
 
             if (string.IsNullOrWhiteSpace(providerOptions.ClientId))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.ClientId"));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{pair.Key}.ClientId"));
             }
 
             if (string.IsNullOrWhiteSpace(providerOptions.Token.Url))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Token.Url"));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{pair.Key}.Token.Url"));
             }
 
             if (string.IsNullOrWhiteSpace(providerOptions.Token.ContentTypeHeader))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Token.ContentTypeHeader"));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{pair.Key}.Token.ContentTypeHeader"));
             }
 
             if (string.IsNullOrWhiteSpace(providerOptions.Data.Url))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Data.Url"));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{pair.Key}.Data.Url"));
             }
 
             if (string.IsNullOrWhiteSpace(providerOptions.Data.AcceptHeader))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Data.AcceptHeader"));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{pair.Key}.Data.AcceptHeader"));
             }
 
             if (string.IsNullOrWhiteSpace(providerOptions.Data.AuthorizationHeaderScheme))
             {
-                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{providerOptions.Name}.Data.AuthorizationHeaderScheme"));
+                return ValidateOptionsResult.Fail(string.Format(Resources.OptionRequired, $"{pair.Key}.Data.AuthorizationHeaderScheme"));
             }
         }
 

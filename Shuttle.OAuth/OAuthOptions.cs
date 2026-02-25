@@ -15,7 +15,7 @@ public class OAuthOptions
     /// <summary>
     ///     A list of configured OAuth providers.
     /// </summary>
-    public List<OAuthProviderOptions> Providers { get; set; } = [];
+    public Dictionary<string, OAuthProviderOptions> Providers { get; set; } = new();
 }
 
 /// <summary>
@@ -49,9 +49,9 @@ public class OAuthProviderOptions
     public List<string> Groups { get; set; } = [];
 
     /// <summary>
-    ///     The name of the provider (e.g., "Google", "Microsoft").
+    ///     The display name of the provider (e.g., "Google", "Microsoft").
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
 
     /// <summary>
     ///     The redirect URI for this provider.
@@ -67,6 +67,8 @@ public class OAuthProviderOptions
     ///     Configuration for the token endpoint.
     /// </summary>
     public TokenOptions Token { get; set; } = new();
+
+    public string SvgFileName { get; set; } = string.Empty;
 }
 
 /// <summary>
