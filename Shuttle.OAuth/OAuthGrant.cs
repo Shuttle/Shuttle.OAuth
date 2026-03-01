@@ -2,9 +2,8 @@
 
 namespace Shuttle.OAuth;
 
-public class OAuthGrant(Guid id, string groupName, string providerName, IDictionary<string, string>? data = null)
+public class OAuthGrant(Guid id, string providerName, IDictionary<string, string>? data = null)
 {
-    public string GroupName { get; } = Guard.AgainstEmpty(groupName);
     public string CodeChallenge { get; private set; } = string.Empty;
     public string CodeVerifier { get; private set; } = string.Empty;
     public IDictionary<string, string> Data { get; } = data ?? new Dictionary<string, string>();

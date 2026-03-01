@@ -18,10 +18,7 @@ public static class ServiceCollectionExtensions
 
             services.Configure<OAuthOptions>(options =>
             {
-                foreach (var kvp in oauthBuilder.Options)
-                {
-                    options[kvp.Key] = kvp.Value;
-                }
+                options.Providers = oauthBuilder.Options.Providers;
             });
 
             services.AddSingleton<IValidateOptions<OAuthOptions>, OAuthOptionsValidator>();

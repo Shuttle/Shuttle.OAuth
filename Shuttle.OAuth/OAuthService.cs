@@ -18,11 +18,11 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
     private readonly OAuthOptions _oauthOptions = Guard.AgainstNull(Guard.AgainstNull(oauthOptions).Value);
 
     /// <inheritdoc />
-    public async Task<OAuthGrant> RegisterAsync(string groupName, string providerName, IDictionary<string, string>? data = null)
+    public async Task<OAuthGrant> RegisterAsync(string providerName, IDictionary<string, string>? data = null)
     {
-        var oauthProviderOptions = _oauthOptions.GetProviderOptions(groupName, providerName);
+        var oauthProviderOptions = _oauthOptions.GetProviderOptions(providerName);
 
-        var grant = new OAuthGrant(Guid.NewGuid(), groupName, providerName, data);
+        var grant = new OAuthGrant(Guid.NewGuid(), providerName, data);
 
         if (!string.IsNullOrWhiteSpace(oauthProviderOptions.Authorize.CodeChallengeMethod))
         {
@@ -55,7 +55,7 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
         Guard.AgainstNull(grant);
         Guard.AgainstEmpty(code);
 
-        var oauthProviderOptions = _oauthOptions.GetProviderOptions(grant.GroupName, grant.ProviderName);
+        var oauthProviderOptions = _oauthOptions.GetProviderOptions(grant.ProviderName);
 
         using var httpClient = _httpClientFactory.CreateClient("Shuttle.OAuth");
         

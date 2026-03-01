@@ -5,6 +5,8 @@
 /// </summary>
 public class OAuthOptions
 {
+    public const string SectionName = "Shuttle:OAuth";
+
     public Dictionary<string, OAuthProviderOptions> Providers { get; set; } = new();
 }
 
