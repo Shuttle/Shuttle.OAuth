@@ -5,16 +5,6 @@
 /// </summary>
 public class OAuthOptions
 {
-    public const string SectionName = "Shuttle:OAuth";
-
-    /// <summary>
-    ///     The default redirect URI to use if none is specified in the grant or provider options.
-    /// </summary>
-    public string DefaultRedirectUri { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     A list of configured OAuth providers.
-    /// </summary>
     public Dictionary<string, OAuthProviderOptions> Providers { get; set; } = new();
 }
 
@@ -23,6 +13,7 @@ public class OAuthOptions
 /// </summary>
 public class OAuthProviderOptions
 {
+    public List<string> Groups { get; set; } = [];
     /// <summary>
     ///     Configuration for the authorization endpoint.
     /// </summary>
@@ -44,12 +35,7 @@ public class OAuthProviderOptions
     public DataOptions Data { get; set; } = new();
 
     /// <summary>
-    ///     The groups that the options belong to.
-    /// </summary>
-    public List<string> Groups { get; set; } = [];
-
-    /// <summary>
-    ///     The display name of the provider (e.g., "Google", "Microsoft").
+    ///     The name of the provider (e.g., "Google", "Microsoft").
     /// </summary>
     public string DisplayName { get; set; } = string.Empty;
 

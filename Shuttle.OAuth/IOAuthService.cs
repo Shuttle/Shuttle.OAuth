@@ -25,8 +25,9 @@ public interface IOAuthService
     /// <summary>
     ///     Registers a new OAuth session/grant for the specified provider.
     /// </summary>
+    /// <param name="groupName">The name of the provider group.</param>
     /// <param name="providerName">The name of the provider to use.</param>
     /// <param name="data">Optional dictionary of data to persist with the grant.</param>
     /// <returns>The created OAuthGrant.</returns>
-    Task<OAuthGrant> RegisterAsync(string providerName, IDictionary<string, string>? data = null);
+    Task<OAuthGrant> RegisterAsync(string groupName, string providerName, IDictionary<string, string>? data = null);
 }

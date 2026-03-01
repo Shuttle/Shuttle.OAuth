@@ -6,18 +6,24 @@ public static class OAuthOptionsExtensions
 {
     extension(OAuthOptions oauthOptions)
     {
-        public OAuthProviderOptions? FindProviderOptions(string providerName)
+        public OAuthProviderOptions? FindProviderOptions(string groupName, string providerName)
         {
+            Guard.AgainstEmpty(groupName);
             Guard.AgainstEmpty(providerName);
 
-            return oauthOptions.Providers.TryGetValue(providerName, out var providerOptions)
+            if (!oauthOptions.TryGetValue(groupName, out var providerGroupOptions))
+            {
+                return null;
+            }
+
+            return providerGroupOptions.Providers.TryGetValue(providerName, out var providerOptions)
                 ? providerOptions
                 : null;
         }
 
-        public OAuthProviderOptions GetProviderOptions(string providerName)
+        public OAuthProviderOptions GetProviderOptions(string groupName, string providerName)
         {
-            return oauthOptions.FindProviderOptions(providerName) ?? throw new InvalidOperationException(string.Format(Resources.OAuthProviderOptionsNotFoundException, providerName));
+            return oauthOptions.FindProviderOptions(groupName, providerName) ?? throw new InvalidOperationException(string.Format(Resources.OAuthProviderOptionsNotFoundException, providerName));
         }
     }
 }

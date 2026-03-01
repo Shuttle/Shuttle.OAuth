@@ -12,14 +12,16 @@ public static class ServiceCollectionExtensions
         {
             Guard.AgainstNull(services);
 
-            var accessBuilder = new OAuthBuilder(services);
+            var oauthBuilder = new OAuthBuilder(services);
 
-            builder?.Invoke(accessBuilder);
+            builder?.Invoke(oauthBuilder);
 
             services.Configure<OAuthOptions>(options =>
             {
-                options.DefaultRedirectUri = accessBuilder.Options.DefaultRedirectUri;
-                options.Providers = accessBuilder.Options.Providers;
+                foreach (var kvp in oauthBuilder.Options)
+                {
+                    options[kvp.Key] = kvp.Value;
+                }
             });
 
             services.AddSingleton<IValidateOptions<OAuthOptions>, OAuthOptionsValidator>();
