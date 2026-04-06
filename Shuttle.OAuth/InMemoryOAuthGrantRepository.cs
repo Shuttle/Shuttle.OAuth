@@ -1,9 +1,12 @@
-﻿using Shuttle.Core.Contract;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Shuttle.Core.Contract;
 
 namespace Shuttle.OAuth;
 
-public class InMemoryOAuthGrantRepository : IOAuthGrantRepository
+public class InMemoryOAuthGrantRepository(ILogger<InMemoryOAuthGrantRepository>? logger = null) : IOAuthGrantRepository
 {
+    private readonly ILogger<InMemoryOAuthGrantRepository> _logger = logger ?? NullLogger<InMemoryOAuthGrantRepository>.Instance;
     private readonly Dictionary<Guid, OAuthGrant> _grants = new();
 
     public async Task SaveAsync(OAuthGrant grant)
@@ -17,6 +20,8 @@ public class InMemoryOAuthGrantRepository : IOAuthGrantRepository
 
     public async Task<OAuthGrant> GetAsync(Guid id)
     {
+        LogMessage.GetGrant(_logger, id);
+
         if (!_grants.TryGetValue(id, out var grant))
         {
             throw new OAuthException(string.Format(Resources.OAuthGrantNotFoundException, id));

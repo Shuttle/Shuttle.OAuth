@@ -1,17 +1,20 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Shuttle.Core.Contract;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 
 namespace Shuttle.OAuth;
 
 /// <summary>
 ///     Provides functionality for registering OAuth grants and retrieving user data.
 /// </summary>
-public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantRepository oauthGrantRepository, IEnumerable<ICodeChallenge> codeChallenges, IHttpClientFactory httpClientFactory)
+public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantRepository oauthGrantRepository, IEnumerable<ICodeChallenge> codeChallenges, IHttpClientFactory httpClientFactory, ILogger<OAuthService>? logger = null)
     : IOAuthService
 {
+    private readonly ILogger<OAuthService> _logger = logger ?? NullLogger<OAuthService>.Instance;
     private readonly IEnumerable<ICodeChallenge> _codeChallenges = Guard.AgainstNull(codeChallenges);
     private readonly IHttpClientFactory _httpClientFactory = Guard.AgainstNull(httpClientFactory);
     private readonly IOAuthGrantRepository _oauthGrantRepository = Guard.AgainstNull(oauthGrantRepository);
@@ -20,9 +23,13 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
     /// <inheritdoc />
     public async Task<OAuthGrant> RegisterAsync(string providerName, IDictionary<string, string>? data = null)
     {
+        Guard.AgainstEmpty(providerName);
+
         var oauthProviderOptions = _oauthOptions.GetProviderOptions(providerName);
 
         var grant = new OAuthGrant(Guid.NewGuid(), providerName, data);
+
+        LogMessage.Register(_logger, grant.Id, providerName);
 
         if (!string.IsNullOrWhiteSpace(oauthProviderOptions.Authorize.CodeChallengeMethod))
         {
@@ -54,6 +61,8 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
     {
         Guard.AgainstNull(grant);
         Guard.AgainstEmpty(code);
+
+        LogMessage.GetData(_logger, grant.Id, grant.ProviderName, code);
 
         var oauthProviderOptions = _oauthOptions.GetProviderOptions(grant.ProviderName);
 
