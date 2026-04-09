@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using Shuttle.Core.Contract;
+using Shuttle.Contract;
 
 namespace Shuttle.OAuth;
 

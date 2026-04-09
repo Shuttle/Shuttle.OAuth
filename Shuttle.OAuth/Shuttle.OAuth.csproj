@@ -19,8 +19,8 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.3" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.16.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.16.0" />
-    <PackageReference Include="Shuttle.Core.Contract" Version="21.0.1-rc3" />
-    <PackageReference Include="Shuttle.Core.Reflection" Version="21.0.1-rc3" />
+    <PackageReference Include="Shuttle.Contract" Version="21.0.1-rc3" />
+    <PackageReference Include="Shuttle.Reflection" Version="21.0.1-rc3" />
   </ItemGroup>
 
   <ItemGroup>
