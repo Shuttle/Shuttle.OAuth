@@ -40,7 +40,7 @@
 
   <PropertyGroup>
     <Description>OAuth infrastructure components.</Description>
-    <Version>21.0.2</Version>
+    <Version>21.0.3</Version>
     <PackageProjectUrl>https://github.com/Shuttle/Shuttle.OAuth</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Shuttle/Shuttle.OAuth.git</RepositoryUrl>
     <PackageTags>oauth</PackageTags>

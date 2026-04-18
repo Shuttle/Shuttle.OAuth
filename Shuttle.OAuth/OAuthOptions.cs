@@ -88,6 +88,11 @@ public class DataOptions
     ///     The URL of the user data endpoint.
     /// </summary>
     public string Url { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The User-Agent header value
+    /// </summary>
+    public string UserAgent { get; set; } = string.Empty;
 }
 
 /// <summary>

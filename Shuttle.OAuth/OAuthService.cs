@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Shuttle.Contract;
 using System.Net.Http.Headers;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.Json;
 
@@ -14,9 +15,9 @@ namespace Shuttle.OAuth;
 public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantRepository oauthGrantRepository, IEnumerable<ICodeChallenge> codeChallenges, IHttpClientFactory httpClientFactory, ILogger<OAuthService>? logger = null)
     : IOAuthService
 {
-    private readonly ILogger<OAuthService> _logger = logger ?? NullLogger<OAuthService>.Instance;
     private readonly IEnumerable<ICodeChallenge> _codeChallenges = Guard.AgainstNull(codeChallenges);
     private readonly IHttpClientFactory _httpClientFactory = Guard.AgainstNull(httpClientFactory);
+    private readonly ILogger<OAuthService> _logger = logger ?? NullLogger<OAuthService>.Instance;
     private readonly IOAuthGrantRepository _oauthGrantRepository = Guard.AgainstNull(oauthGrantRepository);
     private readonly OAuthOptions _oauthOptions = Guard.AgainstNull(Guard.AgainstNull(oauthOptions).Value);
 
@@ -56,6 +57,7 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
         return await GetDataAsync<dynamic>(grant, code);
     }
 
+    /// <exception cref="ArgumentException"></exception>
     /// <inheritdoc />
     public async Task<T> GetDataAsync<T>(OAuthGrant grant, string code)
     {
@@ -67,8 +69,10 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
         var oauthProviderOptions = _oauthOptions.GetProviderOptions(grant.ProviderName);
 
         using var httpClient = _httpClientFactory.CreateClient("Shuttle.OAuth");
-        
+
         var tokenRequest = new HttpRequestMessage(HttpMethod.Post, oauthProviderOptions.Token.Url);
+
+        tokenRequest.Headers.Add("Accept", "application/json");
 
         switch (oauthProviderOptions.Token.ContentTypeHeader.ToUpperInvariant())
         {
@@ -101,7 +105,7 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
 
                 tokenRequest.Headers.Add("Origin", originHeader);
                 tokenRequest.Content = new StringContent(parameterBody.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded");
-                
+
                 break;
             }
             default:
@@ -134,25 +138,25 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
 
         dynamic? accessToken;
 
-        try
+        using var doc = JsonDocument.Parse(content);
+
+        if (doc.RootElement.TryGetProperty("access_token", out var accessTokenElement))
         {
-            using var doc = JsonDocument.Parse(content);
-            
-            if (doc.RootElement.TryGetProperty("access_token", out var accessTokenElement))
-            {
-                accessToken = accessTokenElement.GetString();
-            }
-            else
-            {
-                throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, content));
-            }
+            accessToken = accessTokenElement.GetString();
         }
-        catch
+        else
         {
             throw new InvalidOperationException(string.Format(Resources.AccessTokenNotFoundException, content));
         }
 
         var userRequest = new HttpRequestMessage(HttpMethod.Get, oauthProviderOptions.Data.Url);
+
+        if (!string.IsNullOrWhiteSpace(oauthProviderOptions.Data.UserAgent))
+        {
+            userRequest.Headers.UserAgent.Add(ProductInfoHeaderValue.TryParse(oauthProviderOptions.Data.UserAgent, out var productInfo) 
+                ? productInfo 
+                : new($"({oauthProviderOptions.Data.UserAgent})"));
+        }
 
         if (!string.IsNullOrWhiteSpace(oauthProviderOptions.Data.AcceptHeader))
         {
@@ -162,7 +166,7 @@ public class OAuthService(IOptions<OAuthOptions> oauthOptions, IOAuthGrantReposi
         userRequest.Headers.Authorization = new AuthenticationHeaderValue(!string.IsNullOrWhiteSpace(oauthProviderOptions.Data.AuthorizationHeaderScheme) ? oauthProviderOptions.Data.AuthorizationHeaderScheme : "Bearer", accessToken);
 
         var response = await httpClient.SendAsync(userRequest);
-        
+
         content = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)
